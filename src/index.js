@@ -1,3 +1,18 @@
+/** @jsx Charging.createElement */
+const element = (
+  <div id="foo">
+    <a>Hello world</a>
+    <b />
+  </div>
+);
+
+const container = document.getElementById("root");
+Charging.render(element, container);
+
+/**
+ * 实现部分
+ */
+
 function createElement(type, props, ...children) {
   return {
     type,
@@ -20,13 +35,32 @@ function createTextElement(text) {
   };
 }
 
+let nextUnitOfWork = null;
+
 function render(element, container) {
   const dom =
     element.type === "TEXT_ELEMENT"
       ? document.createTextNode("")
       : document.createElement(element.type);
 
-  element.props.children.forEach((child) => render(child, dom));
+  // 递归的方式无法进行中断
+  // element.props.children.forEach((child) => render(child, dom));
+
+  function workLoop(deadline) {
+    let shouldYield = false;
+    while (nextUnitOfWork && !shouldYield) {
+      nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+      shouldYield = deadline.timeRemaining() < 1;
+    }
+
+    requestIdleCallback(workLoop);
+  }
+
+  requestIdleCallback(workLoop);
+
+  function performUnitOfWork(nextUnitOfWork) {
+    // TODO
+  }
 
   // 判断 props 的值是属性，而不是一个 children
   const isProperty = (key) => key !== "children";
@@ -44,14 +78,3 @@ const Charging = {
   createElement,
   render,
 };
-
-/** @jsx Charging.createElement */
-const element = (
-  <div id="foo">
-    <a>Hello world</a>
-    <b />
-  </div>
-);
-
-const container = document.getElementById("root");
-Charging.render(element, container);
