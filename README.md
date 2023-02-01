@@ -339,6 +339,10 @@ function render(element, container) {
 - 为 element 的 children 创建 fiber
 - 选出下一个工作单元
 
+![fiber](https://cdn.jsdelivr.net/gh/PuffMeow/PictureSave/doc/fiber.png)
+
+
+
 
 设计这个数据结构的目标之一是使查找下一个工作单元变得更加容易，这就是为什么**每一个 Fiber 都会链接到其第一个子节点，下一个兄弟姐妹节点和其父节点。（在下文，用**`child`、`sibling`和`parent` 分别指代子节点、兄弟姐妹节点和父节点**）**
 
